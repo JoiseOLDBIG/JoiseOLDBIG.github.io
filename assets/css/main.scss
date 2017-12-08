@@ -3,3 +3,14 @@
 ---
 
 @import "xixia";
+
+table{
+  border: 1px solid #dedddd;
+  background-color: #fff;
+  margin-bottom: 4px;
+}
+
+table th, table td {
+  border: 1px solid #dedddd;
+  padding: 4px 6px;
+}
