@@ -16,11 +16,11 @@ categories: post
 
 1、安装
 
-npm install webpack-dev-server -g
+    npm install webpack-dev-server -g
 
 2、写入到依赖
 
-npm install webpack-dev-server --save-dev
+    npm install webpack-dev-server --save-dev
 
 -S, --save: Package will appear in your dependencies.
 -D, --save-dev: Package will appear in your devDependencies.
@@ -45,7 +45,7 @@ webpack热加载基本原理
 
 热加载的基本思路就是，监听本地文件修改，然后服务器推送到客户端，执行更新。
 
-# 来源？
+### 来源？
 
 webpack有两个核心概念：
 
@@ -60,7 +60,7 @@ Code Splitting还体现在对公共以来的抽离（CommonsChunkPlugin），如
 
 webpack通过require.ensure来定义一个分离点。require.ensure在实际执行过程中触发了一个jsonp请求，这个请求回调后返回一个对象，这个对象包括了所有异步模块id与异步模块代码。
 
-# 实现
+### 实现
 
 热加载实现主要分为几部分功能
 
@@ -68,7 +68,7 @@ webpack通过require.ensure来定义一个分离点。require.ensure在实际执
 游览器模块更新
 模块更新后页面渲染
 
-# 构建
+### 构建
 
 热加载是通过内置的HotModuleReplacementPlugin实现的，构建过程中热加载相关的逻辑都在这个插件中。这个插件主要处理两部分逻辑
 
@@ -78,37 +78,37 @@ webpack通过require.ensure来定义一个分离点。require.ensure在实际执
 HMR runtime主要定义了jsonp callback方法，这个方法会触发模块更新，并且对模块新增一个module.hot相关API，这个API可以让开发者自定义页面更新逻辑。
 
 构建过程中需要对更新的文件打包出两个文件，这两个文件名规则定义在WebpackOptionsDefaulter
-this.set("output.hotUpdateChunkFilename", "[id].[hash].hot-update.js");
-this.set("output.hotUpdateMainFilename", "[hash].hot-update.json");
+    this.set("output.hotUpdateChunkFilename", "[id].[hash].hot-update.js");
+    this.set("output.hotUpdateMainFilename", "[hash].hot-update.json");
 
 这两个文件一个是说明更新了什么，另外一个是更新的模块代码。这两个文件生成逻辑
 
-compilation.plugin("additional-chunk-assets", function() {
-  this.modules.forEach(function(module) {
-    // 对比 md5 ，标记有修改的模块
-    module.hotUpdate = records.moduleHashs[identifier] !== hash;
-  });
-  // 更新内容对象
-  var hotUpdateMainContent = {};
+    compilation.plugin("additional-chunk-assets", function() {
+      this.modules.forEach(function(module) {
+        // 对比 md5 ，标记有修改的模块
+        module.hotUpdate = records.moduleHashs[identifier] !== hash;
+      });
+      // 更新内容对象
+      var hotUpdateMainContent = {};
 
-  // 找到更新的 js 模块
-  Object.keys(records.chunkHashs).forEach(function(chunkId) {
-    // 渲染更新的 js ，并且追加到 assets
-    var source = hotUpdateChunkTemplate.render(...);
-    this.assets[hotUpdateChunkFilename] = source;
-    hotUpdateMainContent.c.push(chunkId);
-  }, this);
+      // 找到更新的 js 模块
+      Object.keys(records.chunkHashs).forEach(function(chunkId) {
+        // 渲染更新的 js ，并且追加到 assets
+        var source = hotUpdateChunkTemplate.render(...);
+        this.assets[hotUpdateChunkFilename] = source;
+        hotUpdateMainContent.c.push(chunkId);
+      }, this);
 
-  var source = new RawSource(JSON.stringify(hotUpdateMainContent));
-  // assets 中增加 json 文件
-  this.assets[hotUpdateMainFilename] = source;
-});
+      var source = new RawSource(JSON.stringify(hotUpdateMainContent));
+      // assets 中增加 json 文件
+      this.assets[hotUpdateMainFilename] = source;
+    });
 
 具体的过程是在构建chunk的过程中，定义一个插件方法additional-chunk-assets，在这个方法里面通过md5对比hash修改，找到修改的模块，如果发现有模块md5修改了，那么说明有更新，这时候通过hotUpdateChunkTemplate.render生成一份更新的js文件，也就是上面定义的output.hotUpdateChunkFileName，并且在assets中追加一份json描述文件，说明更新了哪个模块以及更新的hash。
 
 上面的代码也可以发现webpack构建过程提供了很多丰富的接口，并且追加一个output文件是非常容易的事情，只需要在assets中push一个文件即可，找到修改的文件也很方便，首先构建前遍历所有的模块，记录所有模块文件内容hash，构建完成后，在一个个对比一遍，就可以找到更新的模块。
 
-# 服务器推送
+### 服务器推送
 
 文件更新后，首先需要打包好心的补丁文件，还需要告诉游览器文件修改了，可以拉代码了。
 
@@ -127,7 +127,7 @@ compilation.plugin("additional-chunk-assets", function() {
 runtime（运行时系统），是一套基于C语言API，包含在<objc/runtime.h>和<objc/message.h>中，运行时系统的功能是在运行期间（而不是编译期或其他时机）通过代码去动态的操作类（获取类的内部信息和动态操作类的成员），如创建一个新类、为某个类添加一个新的方法或者为某个类添加添加实例变量、属性，或者交换两个方法的实现、获取类的属性列表、方法列表等和Java中的发射技术类似。
 
 
-# css hot loader
+### css hot loader
 
 js热加载基本上是通过自动更新组件，重新渲染页面两个步骤完成了。还有一个比较重要的是css热加载，webpack官方提供的方案是style-loader。
 
@@ -153,7 +153,7 @@ js热加载基本上是通过自动更新组件，重新渲染页面两个步骤
 
 css-hot-loader所做的是在css模块中注入一段脚本，所以是一个loader，并且是第一个loader，这样可以保证代码不会被extract-text-webpack-plugin抽出来。
 
-# 总结
+### 总结
 
 
 
