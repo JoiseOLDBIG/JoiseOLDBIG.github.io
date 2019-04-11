@@ -127,7 +127,7 @@ constructor本来是原型对象上的属性，指向构造函数。但是根据
         console.log(John.constructor==Student); // false
         console.log(John.constructor==Person); // true
 
-上述例子中，由于Student继承了Person，constructor被修改只想了Person，导致检测不是John的真实构造函数。
+上述例子中，由于Student继承了Person，constructor被修改指向了Person，导致检测不是John的真实构造函数。
 
 同时，使用instaceof和construcor,被判断的array必须是在当前页面声明的！比如，一个页面（父页面）有一个框架，框架中引用了一个页面（子页面），在子页面中声明了一个array，并将其赋值给父页面的一个变量，这时判断该变量，Array == object.constructor;会返回false； 原因：
 
@@ -157,7 +157,8 @@ constructor本来是原型对象上的属性，指向构造函数。但是根据
 可以看出Object.prototype.toString.call完美得区分了Number、Str、Boolean、Array、Object、Function、Undefined、Null、Date、RegExp和Error。
 
 我们现在再来看看ECMA里是是怎么定义Object.prototype.toString.call的：
-复制代码 代码如下:
+
+代码如下:
 
         Object.prototype.toString( ) When the toString method is called, the following steps are taken: 
         1. Get the [[Class]] property of this object. 
@@ -178,7 +179,7 @@ constructor本来是原型对象上的属性，指向构造函数。但是根据
 
 | 类型\判断方法   | typeof | instanceof | constructor | Object.prototype.toString.call  |
 |:-------------   | :----- |  :-------- | : --------- | : ---------                     |
-| Number(字面量)  |  numeber  |  false     | true        |  ture             |
+| Number(字面量)  |  number  |  false     | true        |  ture             |
 | String(字面量)  |  string  |  false     | true        |  ture             |
 | Boolean(字面量) |  boolean  |  false     | true        |  ture             |
 | Number(new方法) |  object  |  true     | true        |  ture             |
